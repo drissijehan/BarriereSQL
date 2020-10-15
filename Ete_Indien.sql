@@ -23,7 +23,7 @@ and [Delete_Date] is null -- pas de lignes supprimées
 and type_sejour = 1 -- Indiv Loisir
 and Rate_Code in ('PROMO1')
 and Date_Debut <> Date_Fin -- Pas de day use
-and Code_Etablissement in ('CANHM','CANGA') -- Etablissements participants
+and Code_Etablissement in ('CANGA','CANHM') -- Etablissements participants
 and Date_Reservation between '20200825' and dateadd(day,1,'20200904') -- Date Reservation	
 and Date_Debut between '20200830' and '20201031'  -- Date Sejour
 select * from #dat2
@@ -38,17 +38,26 @@ select count ( distinct MasterID) AS CLient
 from #dat3
 
 
+select  Code_Etablissement ,[Classe_de_Chambre]
+,count (distinct MasterID) as Client
+,sum(Nb_Nuits) as Nuit
+,sum(Paye_Chambre_HT) as CA_Hebgt_HT
+ from #dat3
+group by [Classe_de_Chambre],Code_Etablissement 
+
 /*Chiffres clés*/
 
 select --Code_Etablissement,
 count (distinct MasterID) as Client
 ,count (distinct Id_Sejour_Ws) as Sejour
 ,sum (Nb_Nuits) as Nuitees
+,sum (Nb_Nuits)/count (distinct Id_Sejour_Ws) as Nuitee_Moy_Sej
 ,AVG(datediff(day,Date_Reservation,Date_Debut)) as Anticipation
 ,sum(isnull(Paye_Chambre_HT,0)) as Panier_Chambre_HT
 ,sum(isnull(Paye_Total_HT,0)) as Panier_Total_HT -- sur checked out uniquement 
 ,sum(isnull(Paye_Total_TTC,0)) as Panier_Total_TTC -- sur checked out uniquement 
 ,Sum (Paye_chambre_HT) / sum(Nb_Nuits) as RMC
+,sum(isnull(Paye_Total_TTC,0))/count (distinct MasterID) as Panier_Moy_TTC
 FROM #dat3
 group by Code_Etablissement
 
@@ -97,14 +106,26 @@ from #profil
 select count (distinct MasterID) as Client
 ,count (distinct Id_Sejour_Ws) as Sejour
 ,sum (Nb_Nuits) as Nuitees
+,sum (Nb_Nuits)/count (distinct Id_Sejour_Ws) as Nuitee_Moy_Sej
 ,AVG(datediff(day,Date_Reservation,Date_Debut)) as Anticipation
 ,sum(isnull(Paye_Chambre_HT,0)) as Panier_Chambre_HT
 ,sum(isnull(Paye_Total_HT,0)) as Panier_Total_HT -- sur checked out uniquement 
 ,sum(isnull(Paye_Total_TTC,0)) as Panier_Total_TTC
 ,Sum (Paye_chambre_HT) / sum(Nb_Nuits) as RMC
+,sum(isnull(Paye_Total_TTC,0))/count (distinct MasterID) as Panier_Moy_TTC
 FROM #dat3
 where MasterID in (select MasterID from  [SIDBDWH].[qts].[T_CONTACTS]
 where Client_IB=1)
+
+
+select  Code_Etablissement ,[Classe_de_Chambre]
+,count (distinct MasterID) as Client
+,sum(Nb_Nuits) as Nuit
+,sum(Paye_Chambre_HT) as CA_Hebgt_HT
+ from #dat3
+ where MasterID in (select MasterID from  [SIDBDWH].[qts].[T_CONTACTS]
+where Client_IB=1)
+group by [Classe_de_Chambre],Code_Etablissement 
 
 /* Profil */
 select 
