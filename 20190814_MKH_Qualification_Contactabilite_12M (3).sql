@@ -1,3 +1,6 @@
+--hellooooooooooo
+
+
 
 Drop table #perimetre
 Select --'20180501' 
