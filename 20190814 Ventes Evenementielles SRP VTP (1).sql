@@ -404,7 +404,3 @@ else '4 - NB' end , /*case when len(convert(varchar,month(Dt_Deb))) = 1 then
 convert(varchar,year(Dt_Deb)) + '0' + convert(varchar,month(Dt_Deb)) 
 else convert(varchar,year(Dt_Deb)) + convert(varchar,month(Dt_Deb)) end*/
 [Code_Etablissement]
-
-/*ceci est juste un test*/
-
-/*Branch test*/

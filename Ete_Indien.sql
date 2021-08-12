@@ -10,6 +10,7 @@ and type_sejour = 1 -- Indiv Loisir
 and Rate_Code in ('PROMO2')
 and Date_Debut <> Date_Fin -- Pas de day use
 and Code_Etablissement in ('DEAHN','DEAHG','LBAHR','LBAML','ENGGE','LILHC','DINGH','RIBRR') -- Etablissements participants
+--and Code_Etablissement in ('DEAHN','DEAHG','LBAHR','LBAML','DINGH') -- Etablissements participants avec perimetre comparable
 and Date_Reservation between '20200825' and dateadd(day,1,'20200904') -- Date Reservation	
 and Date_Debut between '20200830' and '20201031'  -- Date Sejour
 
@@ -23,7 +24,7 @@ and [Delete_Date] is null -- pas de lignes supprimées
 and type_sejour = 1 -- Indiv Loisir
 and Rate_Code in ('PROMO1')
 and Date_Debut <> Date_Fin -- Pas de day use
-and Code_Etablissement in ('CANGA','CANHM') -- Etablissements participants
+and Code_Etablissement in ('CANHM','CANGA') -- Etablissements participants
 and Date_Reservation between '20200825' and dateadd(day,1,'20200904') -- Date Reservation	
 and Date_Debut between '20200830' and '20201031'  -- Date Sejour
 select * from #dat2
@@ -38,26 +39,17 @@ select count ( distinct MasterID) AS CLient
 from #dat3
 
 
-select  Code_Etablissement ,[Classe_de_Chambre]
-,count (distinct MasterID) as Client
-,sum(Nb_Nuits) as Nuit
-,sum(Paye_Chambre_HT) as CA_Hebgt_HT
- from #dat3
-group by [Classe_de_Chambre],Code_Etablissement 
-
 /*Chiffres clés*/
 
 select --Code_Etablissement,
 count (distinct MasterID) as Client
 ,count (distinct Id_Sejour_Ws) as Sejour
 ,sum (Nb_Nuits) as Nuitees
-,sum (Nb_Nuits)/count (distinct Id_Sejour_Ws) as Nuitee_Moy_Sej
 ,AVG(datediff(day,Date_Reservation,Date_Debut)) as Anticipation
 ,sum(isnull(Paye_Chambre_HT,0)) as Panier_Chambre_HT
 ,sum(isnull(Paye_Total_HT,0)) as Panier_Total_HT -- sur checked out uniquement 
 ,sum(isnull(Paye_Total_TTC,0)) as Panier_Total_TTC -- sur checked out uniquement 
 ,Sum (Paye_chambre_HT) / sum(Nb_Nuits) as RMC
-,sum(isnull(Paye_Total_TTC,0))/count (distinct MasterID) as Panier_Moy_TTC
 FROM #dat3
 group by Code_Etablissement
 
@@ -106,26 +98,14 @@ from #profil
 select count (distinct MasterID) as Client
 ,count (distinct Id_Sejour_Ws) as Sejour
 ,sum (Nb_Nuits) as Nuitees
-,sum (Nb_Nuits)/count (distinct Id_Sejour_Ws) as Nuitee_Moy_Sej
 ,AVG(datediff(day,Date_Reservation,Date_Debut)) as Anticipation
 ,sum(isnull(Paye_Chambre_HT,0)) as Panier_Chambre_HT
 ,sum(isnull(Paye_Total_HT,0)) as Panier_Total_HT -- sur checked out uniquement 
 ,sum(isnull(Paye_Total_TTC,0)) as Panier_Total_TTC
 ,Sum (Paye_chambre_HT) / sum(Nb_Nuits) as RMC
-,sum(isnull(Paye_Total_TTC,0))/count (distinct MasterID) as Panier_Moy_TTC
 FROM #dat3
 where MasterID in (select MasterID from  [SIDBDWH].[qts].[T_CONTACTS]
 where Client_IB=1)
-
-
-select  Code_Etablissement ,[Classe_de_Chambre]
-,count (distinct MasterID) as Client
-,sum(Nb_Nuits) as Nuit
-,sum(Paye_Chambre_HT) as CA_Hebgt_HT
- from #dat3
- where MasterID in (select MasterID from  [SIDBDWH].[qts].[T_CONTACTS]
-where Client_IB=1)
-group by [Classe_de_Chambre],Code_Etablissement 
 
 /* Profil */
 select 
@@ -142,8 +122,9 @@ and Client_IB=1
 ----------------------------
 /* Canal de Vente */
 
-select LB_CANAL_RESERVATION--, LB_CANAL_DETAIL 
+select LB_CANAL_RESERVATION, LB_CANAL_DETAIL 
 ,count (distinct Id_Sejour_WS) as Sejour
+, sum(Paye_Total_TTC) as panier_tot_ttc
 FROM #dat3 r
 inner join [SIDBDMT].[mkh].[T_FAIT_SEJOUR] s
 on r.Id_Sejour_WS=s.ID_SEJOUR
@@ -166,7 +147,8 @@ and [Delete_Date] is null -- pas de lignes supprimées
 and type_sejour = 1 -- Indiv Loisir
 and Rate_Code in ('PROMO2')
 and Date_Debut <> Date_Fin -- Pas de day use
-and Code_Etablissement in ('DEAHN','DEAHG','LBAHH','LBAHR','LBAML','DINGH') -- Etablissements participants
+--and Code_Etablissement in ('DEAHN','DEAHG','LBAHH','LBAHR','LBAML','DINGH') -- Etablissements participants
+and Code_Etablissement in ('DEAHN','DEAHG','LBAHR','LBAML','DINGH') -- Etablissements participants avec perimetre comparable
 and Date_Reservation between '20190827' and dateadd(day,1,'20190906') -- Date Reservation	
 and Date_Debut between '20190830' and '20191031'  -- Date Sejour
 and [Source_Reservation] in (18,27, 21,22,23,24) -- commandes web 18 = OWS |  27 = HB
@@ -194,7 +176,7 @@ select * from #dat19_3
 select count ( distinct MasterID) AS CLient 
 ,count (distinct id_sejour_ws) as sejour 
 ,sum(Nb_Nuits) as Nuit
-from #dat19_3                               
+from #dat19_3                              
 
 
 /*Chiffres clés*/

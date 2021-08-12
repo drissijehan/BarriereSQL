@@ -134,13 +134,13 @@ group by Source_Reservation,LB_SOURCE_RESERVATION
 select *	
 FROM [SIDBDWH].[qts].[T_OPERATION]	
 where slabel  like '%automne%' --- ici	
-and tsStart >= '20190101' */	
+and tsStart >= '20200101' */	
 	
 /*Stockage id opeartion crm*/	
 select 83097103 as IdOperation into #op_crm	
 	
 
-/* 83097103_Ventes exclusives - OP1090 */
+/* 83097103_Ventes exclusives - OP1275 */
 Drop table #cibles
 select b.MasterID,count(distinct iOperationId) as nb_op,
 count(distinct b.iDeliveryId) as nb_envois,

@@ -84,5 +84,3 @@ where Date_Seance_Casino >= '20191017' and Code_Etablissement in ('CAN')
 and Univers in (4) ---and Handle between 0.01 and 1000000	
 group by Niv_Fid	
 order by Niv_Fid	
-
-/**test/
